@@ -16,15 +16,11 @@ const Job = ({ job }) => (
             <div className="content">{job.description}</div>
         </div>
         <footer className="card-footer">
-            <div className="card-footer-item">
-                Address: {job.locations[0].address}
-            </div>
-            <div className="card-footer-item">
-                lng: {job.locations[0].coordinates[0]}
-            </div>
-            <div className="card-footer-item">
-                lat: {job.locations[0].coordinates[1]}
-            </div>
+            {job.locations.map(location => (
+                <div key={location.address} className="card-footer-item">
+                    Location: {`${location.address} (lng: ${location.coordinates[0]}, lat: ${location.coordinates[1]})`}
+                </div>
+            ))}
         </footer>
     </div>
 );

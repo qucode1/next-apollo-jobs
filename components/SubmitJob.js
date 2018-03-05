@@ -15,11 +15,13 @@ class SubmitJob extends Component {
                 name: "",
                 lat: "",
                 lng: ""
-            }
+            },
+            locations: []
         }
         this.addAutocomplete = this.addAutocomplete.bind(this)
         this.handleInputChange = this.handleInputChange.bind(this)
         this.handleLocationChange = this.handleLocationChange.bind(this)
+        this.addLocation = this.addLocation.bind(this)
         this.handleSubmit = this.handleSubmit.bind(this)
     }
     componentDidMount() {
@@ -28,11 +30,18 @@ class SubmitJob extends Component {
     addAutocomplete() {
         if (window.google && window.google.maps) {
             const locationInput = document.querySelector("#locationInput")
+            const autocomplete = new google.maps.places.Autocomplete(
+                locationInput,
+                { types: ["(regions)"], componentRestrictions: { country: "DE" } }
+            )
+
             locationInput.addEventListener("keydown", (e) => {
-                if (e.keyCode === 13) e.preventDefault()
+                if (e.keyCode === 13) {
+                    e.preventDefault()
+                    this.state.location.name && this.addLocation(e)
+                }
             })
 
-            const autocomplete = new google.maps.places.Autocomplete(locationInput, { types: ["(regions)"], componentRestrictions: { country: "DE" } })
             autocomplete.addListener("place_changed", e => this.handleLocationChange(e, autocomplete))
 
             this.setState({
@@ -48,27 +57,46 @@ class SubmitJob extends Component {
     }
     handleLocationChange(e, autocomplete) {
         const place = autocomplete.getPlace()
-        this.setState({
-            location: {
-                name: place.vicinity,
-                lat: place.geometry.location.lat(),
-                lng: place.geometry.location.lng()
-            }
-        })
+        if (place.geometry) {
+            this.setState({
+                location: {
+                    name: place.vicinity,
+                    lat: parseFloat(place.geometry.location.lat()),
+                    lng: parseFloat(place.geometry.location.lng())
+                }
+            })
+        }
+    }
+    addLocation(e) {
+        e.preventDefault()
+        if (this.state.location.name) {
+            this.setState(state => (
+                {
+                    locations: [...state.locations, state.location],
+                    location: {
+                        name: "",
+                        lat: "",
+                        lng: ""
+                    }
+                }
+            ), () => document.querySelector("#locationInput").value = "")
+        }
     }
     handleSubmit(event) {
         event.preventDefault();
-        const { title, description, location: { name, lat, lng } } = this.state
+        const { title, description, locations } = this.state
         const form = event.target;
         const input = {
             title,
             description
         }
-        const locations = [{
-            coordinates: [parseFloat(lng), parseFloat(lat)],
-            address: name
-        }]
-        this.props.createJob(input, locations);
+        if (locations.length > 0) {
+            const locationsObj = locations.map(location => ({
+                coordinates: [location.lng, location.lat],
+                address: location.name
+            }))
+            this.props.createJob(input, locationsObj)
+        }
         // form.reset();
     }
     render() {
@@ -80,16 +108,42 @@ class SubmitJob extends Component {
                 </Head>}
                 <form onSubmit={this.handleSubmit}>
                     <h1>New Job:</h1>
-                    <input className="input" placeholder="title" name="title" type="text" required onChange={this.handleInputChange} value={this.state.jobtitle} />
-                    <input className="input" placeholder="description" name="description" type="text" required onChange={this.handleInputChange} value={this.state.jobdescription} />
-                    <input id="locationInput" className="input" placeholder="location" name="location" type="text" required />
+                    <input
+                        autoFocus
+                        className="input"
+                        placeholder="title"
+                        name="title"
+                        type="text"
+                        required
+                        onChange={this.handleInputChange}
+                        value={this.state.jobtitle}
+                    />
+                    <input
+                        className="input"
+                        placeholder="description"
+                        name="description"
+                        type="text"
+                        required
+                        onChange={this.handleInputChange}
+                        value={this.state.jobdescription}
+                    />
+                    <ul>
+                        {this.state.locations.map(location => (
+                            <li key={location.name}>
+                                <h4>{location.name}</h4>
+                                <p>{`lat: ${location.lat} - lng: ${location.lat}`}</p>
+                            </li>
+                        ))}
+                    </ul>
+                    <input id="locationInput" className="input" placeholder="location" name="location" type="text" />
+                    <button onClick={this.addLocation}>Add Location</button>
                     <button className="button" type="submit">
                         Create
                 </button>
                 </form>
                 <input type="text" placeholder="city" disabled value={this.state.location.name} />
-                <input type="text" placeholder="lng" disabled value={this.state.location.lng} />
-                <input type="text" placeholder="lat" disabled value={this.state.location.lat} />
+                <input type="number" placeholder="lng" disabled value={this.state.location.lng} />
+                <input type="number" placeholder="lat" disabled value={this.state.location.lat} />
                 <style jsx>{`
                     form {
                         display: flex;
@@ -106,7 +160,7 @@ class SubmitJob extends Component {
 
 const createJob = gql`
     mutation createJob($input: JobInput!, $locations: [LocationInput!]!) {
-        createJob(input: $input, locations:$locations) {
+        createJob(input: $input, locations: $locations) {
             id
             title
             description
