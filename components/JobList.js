@@ -18,7 +18,7 @@ const Job = ({ job }) => (
         <footer className="card-footer">
             {job.locations.map(location => (
                 <div key={location.address} className="card-footer-item">
-                    Location: {`${location.address} (lng: ${location.coordinates[0]}, lat: ${location.coordinates[1]})`}
+                    Location: {`${location.address} (data: ${location.data})`}
                 </div>
             ))}
         </footer>
@@ -47,9 +47,8 @@ export const allJobs = gql`
       title
       description
       locations {
-          type
-          coordinates
           address
+          data
       }
     }
   }

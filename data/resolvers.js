@@ -1,4 +1,5 @@
-const { User, Job } = require('./mongodb');
+const mongoose = require('mongoose');
+const { User, Job, Location } = require('./mongodb');
 
 const resolvers = {
     Query: {
@@ -9,13 +10,60 @@ const resolvers = {
             return User.find();
         },
         job(_, args) {
-            return Job.find(args);
+            return Job.findOne(args);
         },
         jobs(_, args, ctx) {
             return Job.find(args)
         },
         allJobs() {
             return Job.find()
+        },
+        nearbyJobs(_, { lng, lat, distance, order }, ctx) {
+            const aggregate = Location.aggregate([
+                {
+                    $geoNear: {
+                        near: {
+                            type: "Point",
+                            coordinates: [lng, lat]
+                        },
+                        spherical: true,
+                        distanceField: "dist.calculated",
+                        distanceMultiplier: 0.001,
+                        maxDistance: distance * 1000 || 10000,
+                    }
+                },
+                {
+                    $match: {
+                        category: "job"
+                    },
+                },
+                {
+                    $group: { _id: "$job", distance: { $first: "$dist.calculated" } }
+                },
+                {
+                    $sort: {
+                        "distance": (order && (order === 1 || order === -1) && order) || 1
+                    }
+                },
+                {
+                    $lookup: {
+                        from: "jobs",
+                        localField: "_id",
+                        foreignField: "_id",
+                        as: "job"
+                    }
+                }
+            ])
+            const getResult = async () => {
+                const result = await aggregate.exec()
+                const jobArray = result.map(job => ({
+                    distance: job.distance,
+                    job: job.job[0]
+                }))
+                // console.log(result)
+                return jobArray
+            }
+            return getResult()
         }
     },
     User: {
@@ -23,13 +71,22 @@ const resolvers = {
             return user._id
         }
     },
-    // Job: {
-    //     locations(job) {
-    //         return job.locations.map((location) => {
-    //             Locations.findById(location.id)
-    //         })
-    //     },
-    // },
+    Job: {
+        id(job) {
+            return job._id
+        }
+    },
+    Location: {
+        id(location) {
+            return location._id
+        }
+    },
+    LocationRef: {
+        async data(loc) {
+            const result = await Location.findOne({ _id: loc.data })
+            return result
+        }
+    },
     Mutation: {
         async createUser(_, { input }) {
             return await new User({
@@ -38,29 +95,25 @@ const resolvers = {
             // return await user.save()
         },
         async createJob(_, { input, locations }, ctx) {
-            console.log(input)
-            console.log(locations)
-            locations.forEach(location => {
-                location.type = "Point"
-            })
             const job = new Job({
+                _id: new mongoose.Types.ObjectId(),
                 ...input,
-                locations
+                locations: []
             })
+            console.dir(locations)
+            for (const loc of locations) {
+                const location = await new Location({
+                    category: "job",
+                    job: job._id,
+                    loc
+                }).save()
+                job.locations.push({
+                    address: location.loc.address,
+                    data: location._id
+                })
+            }
             return await job.save()
-            // return job
         },
-        // async createPost(_, { input }) {
-        //     const author = await Author.findOne({ id: input.author });
-        //     const count = await Post.count();
-        //     const post = new Post({
-        //         ...input,
-        //         author: author._id,
-        //         id: count + 1,
-        //     });
-        //     await post.save();
-        //     return post.toObject();
-        // },
     },
 };
 

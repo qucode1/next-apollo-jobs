@@ -14,9 +14,28 @@ const JobSchema = mongoose.Schema({
     title: String,
     description: String,
     locations: [{
+        address: String,
+        data: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Location"
+        }
+    }]
+});
+
+const LocationSchema = mongoose.Schema({
+    category: String,
+    user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User"
+    },
+    job: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Job"
+    },
+    loc: {
         type: {
             type: String,
-            default: 'Point'
+            default: "Point"
         },
         coordinates: [{
             type: Number,
@@ -26,11 +45,16 @@ const JobSchema = mongoose.Schema({
             type: String,
             required: "You must supply an address!"
         }
-    }]
-});
+    }
+})
+
+LocationSchema.index({ loc: "2dsphere" })
+
 
 const User = mongoose.model('User', UserSchema);
 const Job = mongoose.model('Job', JobSchema);
+const Location = mongoose.model('Location', LocationSchema)
 
 exports.User = User;
 exports.Job = Job;
+exports.Location = Location

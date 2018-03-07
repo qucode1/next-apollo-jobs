@@ -95,6 +95,7 @@ class SubmitJob extends Component {
                 coordinates: [location.lng, location.lat],
                 address: location.name
             }))
+            console.dir(locationsObj)
             this.props.createJob(input, locationsObj)
         }
         // form.reset();
@@ -131,7 +132,7 @@ class SubmitJob extends Component {
                         {this.state.locations.map(location => (
                             <li key={location.name}>
                                 <h4>{location.name}</h4>
-                                <p>{`lat: ${location.lat} - lng: ${location.lat}`}</p>
+                                <p>{`lat: ${location.lat} - lng: ${location.lng}`}</p>
                             </li>
                         ))}
                     </ul>
@@ -165,9 +166,8 @@ const createJob = gql`
             title
             description
             locations {
-                type
-                coordinates
                 address
+                data
             }
         }
     }
