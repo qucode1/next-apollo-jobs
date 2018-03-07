@@ -2,28 +2,26 @@ import React, { Component, Fragment } from 'react';
 import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
 
-import { allJobs } from './JobList';
+import { allUsers } from './UserList';
 
 import PlacesImport from './PlacesImport'
 
-class SubmitJob extends Component {
+class SubmitUser extends Component {
     constructor(props) {
         super(props)
         this.state = {
             googleAPIReady: false,
-            title: "",
-            description: "",
+            firstName: "",
+            lastName: "",
+            email: "",
             location: {
                 name: "",
                 lat: "",
                 lng: ""
-            },
-            locations: []
+            }
         }
         this.addAutocomplete = this.addAutocomplete.bind(this)
         this.handleInputChange = this.handleInputChange.bind(this)
-        this.handleLocationChange = this.handleLocationChange.bind(this)
-        this.addLocation = this.addLocation.bind(this)
         this.handleSubmit = this.handleSubmit.bind(this)
     }
     componentDidMount() {
@@ -69,81 +67,71 @@ class SubmitJob extends Component {
             })
         }
     }
-    addLocation(e) {
-        e.preventDefault()
-        if (this.state.location.name) {
-            this.setState(state => (
-                {
-                    locations: [...state.locations, state.location],
-                    location: {
-                        name: "",
-                        lat: "",
-                        lng: ""
-                    }
-                }
-            ), () => document.querySelector("#locationInput").value = "")
-        }
-    }
     handleSubmit(event) {
         event.preventDefault();
-        const { title, description, locations } = this.state
+        const { firstName, lastName, email, location } = this.state
         const form = event.target;
         const input = {
-            title,
-            description
+            firstName,
+            lastName,
+            email
         }
-        if (locations.length > 0) {
-            const locationsObj = locations.map(location => ({
+        if (location) {
+            const locationObj = {
                 coordinates: [location.lng, location.lat],
                 address: location.name
-            }))
-            // console.dir(locationsObj)
-            this.props.createJob(input, locationsObj)
+            }
+            // console.dir(locationObj)
+            this.props.createUser(input, locationObj)
         }
     }
     render() {
-
+        const { firstName, lastName, email } = this.state
         return (
             <Fragment>
                 {!this.state.googleAPIReady && <PlacesImport />}
                 <form onSubmit={this.handleSubmit}>
-                    <h1>New Job:</h1>
+                    <h1>New User:</h1>
                     <input
                         autoFocus
                         className="input"
-                        placeholder="title"
-                        name="title"
+                        placeholder="First Name"
+                        name="firstName"
                         type="text"
                         required
                         onChange={this.handleInputChange}
-                        value={this.state.jobtitle}
+                        value={firstName}
                     />
                     <input
                         className="input"
-                        placeholder="description"
-                        name="description"
+                        placeholder="Last Name"
+                        name="lastName"
                         type="text"
                         required
                         onChange={this.handleInputChange}
-                        value={this.state.jobdescription}
+                        value={lastName}
                     />
-                    <ul>
-                        {this.state.locations.map(location => (
-                            <li key={location.name}>
-                                <h4>{location.name}</h4>
-                                <p>{`lat: ${location.lat} - lng: ${location.lng}`}</p>
-                            </li>
-                        ))}
-                    </ul>
-                    <input id="locationInput" className="input" placeholder="location" name="location" type="text" />
-                    <button onClick={this.addLocation}>Add Location</button>
+                    <input
+                        className="input"
+                        placeholder="Email"
+                        name="email"
+                        type="email"
+                        required
+                        onChange={this.handleInputChange}
+                        value={email}
+                    />
+                    <input
+                        id="locationInput"
+                        className="input"
+                        placeholder="location"
+                        name="location"
+                        type="text"
+                        required
+                    />
                     <button className="button" type="submit">
-                        Create
+                        Create User
                     </button>
                 </form>
-                <input type="text" placeholder="city" disabled value={this.state.location.name} />
-                <input type="number" placeholder="lng" disabled value={this.state.location.lng} />
-                <input type="number" placeholder="lat" disabled value={this.state.location.lat} />
                 <style jsx>{`
                     form {
                         display: flex;
@@ -156,38 +144,39 @@ class SubmitJob extends Component {
             </Fragment>
         );
     }
-};
+}
 
-const createJob = gql`
-    mutation createJob($input: JobInput!, $locations: [LocationInput!]!) {
-        createJob(input: $input, locations: $locations) {
-            id
-            title
-            description
-            locations {
-                address
-            }
-        }
+const createUser = gql`
+  mutation createUser($input: UserInput!, $location: LocationInput!) {
+    createUser(input: $input, location: $location) {
+      id
+      email
+      firstName
+      lastName
+      location {
+          address
+      }
     }
+  }
 `;
 
-export default graphql(createJob, {
+export default graphql(createUser, {
     props: ({ mutate }) => ({
-        createJob: (input, locations) =>
+        createUser: (input, location) =>
             mutate({
-                variables: { input, locations },
-                update: (proxy, { data: { createJob } }) => {
+                variables: { input, location },
+                update: (proxy, { data: { createUser } }) => {
                     const data = proxy.readQuery({
-                        query: allJobs,
+                        query: allUsers,
                     });
                     proxy.writeQuery({
-                        query: allJobs,
+                        query: allUsers,
                         data: {
                             ...data,
-                            allJobs: [createJob, ...data.allJobs],
+                            allUsers: [createUser, ...data.allUsers],
                         },
                     });
                 },
             }),
     }),
-})(SubmitJob);
+})(SubmitUser);

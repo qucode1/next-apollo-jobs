@@ -1,7 +1,7 @@
 import { Component, Fragment } from 'react';
 
 import UserList from '../components/UserList'
-import Submit from '../components/Submit'
+import SubmitUser from '../components/SubmitUser'
 import SubmitJob from '../components/SubmitJob'
 import JobList from '../components/JobList';
 
@@ -27,7 +27,7 @@ class AddData extends Component {
                 </div>
                 {activeCategory === "user" && (
                     <Fragment>
-                        <Submit />
+                        <SubmitUser />
                         <UserList />
                     </Fragment>
                 )
