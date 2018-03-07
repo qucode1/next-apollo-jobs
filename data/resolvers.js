@@ -88,11 +88,21 @@ const resolvers = {
         }
     },
     Mutation: {
-        async createUser(_, { input }) {
-            return await new User({
-                ...input,
+        async createUser(_, { input, location }, ctx) {
+            const user = new User({
+                _id: new mongoose.Types.ObjectId(),
+                ...input
+            })
+            const userLocation = await new Location({
+                category: "user",
+                user: user._id,
+                loc: location
             }).save()
-            // return await user.save()
+            user.location = {
+                address: userLocation.loc.address,
+                data: userLocation._id
+            }
+            return await user.save()
         },
         async createJob(_, { input, locations }, ctx) {
             const job = new Job({
@@ -100,7 +110,6 @@ const resolvers = {
                 ...input,
                 locations: []
             })
-            console.dir(locations)
             for (const loc of locations) {
                 const location = await new Location({
                     category: "job",
@@ -113,7 +122,7 @@ const resolvers = {
                 })
             }
             return await job.save()
-        },
+        }
     },
 };
 

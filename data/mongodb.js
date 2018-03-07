@@ -7,7 +7,14 @@ mongoose.connect(process.env.MONGO_URL);
 const UserSchema = mongoose.Schema({
     firstName: String,
     lastName: String,
-    email: String
+    email: String,
+    location: {
+        address: String,
+        data: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Location"
+        }
+    }
 });
 
 const JobSchema = mongoose.Schema({

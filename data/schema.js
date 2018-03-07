@@ -19,6 +19,7 @@ const typeDefs = `
     firstName: String
     lastName: String
     email: String
+    location: LocationRef
   }
   input UserInput {
     firstName: String!
@@ -56,7 +57,7 @@ const typeDefs = `
     description: String!
   }
   type Mutation {
-    createUser(input: UserInput!): User
+    createUser(input: UserInput!, location: LocationInput!): User
     createJob(input: JobInput!, locations: [LocationInput!]!): Job
   }
 `;

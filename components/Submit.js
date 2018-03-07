@@ -1,7 +1,10 @@
 import React, { Fragment } from 'react';
 import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
+
 import { allUsers } from './UserList';
+
+import PlacesImport from './PlacesImport'
 
 const Submit = ({ createUser }) => {
     function handleSubmit(event) {

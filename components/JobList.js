@@ -10,17 +10,20 @@ const Job = ({ job }) => (
       }
     `}</style>
         <header className="card-header">
-            <p className="card-header-title">{job.title}</p>
+            <h2 className="card-header-title">{job.title}</h2>
         </header>
         <div className="card-content">
             <div className="content">{job.description}</div>
         </div>
         <footer className="card-footer">
-            {job.locations.map(location => (
-                <div key={location.address} className="card-footer-item">
-                    Location: {`${location.address} (data: ${location.data})`}
-                </div>
-            ))}
+            <h4>Locations</h4>
+            <ul>
+                {job.locations.map(location => (
+                    <li key={location.address} className="card-footer-item">
+                        {`${location.address}`}
+                    </li>
+                ))}
+            </ul>
         </footer>
     </div>
 );
@@ -41,14 +44,13 @@ const JobList = ({ data }) => {
 };
 
 export const allJobs = gql`
-  query {
+  query allJobs{
     allJobs {
       id
       title
       description
       locations {
           address
-          data
       }
     }
   }

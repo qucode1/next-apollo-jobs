@@ -1,8 +1,10 @@
 import React, { Component, Fragment } from 'react';
 import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
+
 import { allJobs } from './JobList';
-import Head from 'next/head'
+
+import PlacesImport from './PlacesImport'
 
 class SubmitJob extends Component {
     constructor(props) {
@@ -104,9 +106,7 @@ class SubmitJob extends Component {
 
         return (
             <Fragment>
-                {!this.state.googleAPIReady && <Head>
-                    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBZHOD7ycm16JS2OQ-gHcAihzXvwe6Gaf8&libraries=places&language=de&region=DE"></script>
-                </Head>}
+                {!this.state.googleAPIReady && <PlacesImport />}
                 <form onSubmit={this.handleSubmit}>
                     <h1>New Job:</h1>
                     <input
@@ -167,7 +167,6 @@ const createJob = gql`
             description
             locations {
                 address
-                data
             }
         }
     }
