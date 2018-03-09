@@ -32,7 +32,7 @@ class SubmitUser extends Component {
             const locationInput = document.querySelector("#locationInput")
             const autocomplete = new google.maps.places.Autocomplete(
                 locationInput,
-                { types: ["(regions)"], componentRestrictions: { country: "DE" } }
+                { types: ["address"], componentRestrictions: { country: "DE" } }
             )
 
             locationInput.addEventListener("keydown", (e) => {
@@ -57,10 +57,11 @@ class SubmitUser extends Component {
     }
     handleLocationChange(e, autocomplete) {
         const place = autocomplete.getPlace()
-        if (place.geometry) {
+        console.log(place)
+        if (place.geometry && place.types.includes("street_address")) {
             this.setState({
                 location: {
-                    name: place.vicinity,
+                    name: place.formatted_address,
                     lat: parseFloat(place.geometry.location.lat()),
                     lng: parseFloat(place.geometry.location.lng())
                 }

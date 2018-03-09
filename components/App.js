@@ -1,55 +1,42 @@
-import Header from "./Header"
-import Head from "next/head"
+import { withStyles } from "material-ui/styles"
+import withRoot from "../lib/withRoot"
 import { Fragment } from 'react'
 
+import Hidden from 'material-ui/Hidden';
 
-const App = ({ children }) => (
-  <Fragment>
-    <Head>
-      <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500" />
+import Header from "./Header"
+import Navigation from "./Navigation"
 
-    </Head>
+const styles = theme => ({
+  "@global": {
+    body: {
+      margin: 0
+    }
+  },
+  appFrame: {
+    display: "flex",
+    width: "100%",
+    zIndex: 1,
+    overflow: 'hidden',
+    position: 'relative',
+  },
+  content: {
+    flexGrow: 1,
+    backgroundColor: theme.palette.background.default,
+    padding: theme.spacing.unit * 3,
+  }
+})
 
+const App = ({ children, classes }) => (
+  <div className={classes.appFrame} >
     <Header />
-    <main>
+    <Hidden smDown>
+      <Navigation />
+    </Hidden>
+    <main className={classes.content}>
       {children}
-      <style jsx global>{`
-        * {
-          font-family: Roboto, sans-serif
-        }
-        body {
-          margin: 0;
-          padding: 25px 50px;
-        }
-        a {
-          color: #22bad9;
-        }
-        p {
-          font-size: 14px;
-          line-height: 24px;
-        }
-        article {
-          margin: 0 auto;
-          max-width: 650px;
-        }
-        button {
-          align-items: center;
-          background-color: #22bad9;
-          border: 0;
-          color: white;
-          display: flex;
-          padding: 5px 7px;
-        }
-        button:active {
-          background-color: #1b9db7;
-          transition: background-color 0.3s;
-        }
-        button:focus {
-          outline: none;
-        }
-      `}</style>
     </main>
-  </Fragment>
+  </div>
 )
 
-export default App
+export default withRoot(withStyles(styles)(App))

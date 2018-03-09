@@ -9,10 +9,7 @@ const typeDefs = `
     jobs(title: String, location: String): [Job]
     allJobs: [Job]
     nearbyJobs(lng: Float!, lat: Float!, distance: Int, order: Int): [nearbyJob]
-  }
-  type nearbyJob {
-    distance: Float,
-    job: Job
+    nearbyUsers(lng: Float!, lat: Float!, distance: Int, order: Int): [nearbyUser]
   }
   type User {
     id: String
@@ -21,16 +18,19 @@ const typeDefs = `
     email: String
     location: LocationRef
   }
-  input UserInput {
-    firstName: String!
-    lastName: String
-    email: String!
+  type nearbyUser {
+    distance: Float,
+    user: User
   }
   type Job {
     id: String
     title: String
     description: String
     locations: [LocationRef]
+  }
+  type nearbyJob {
+    distance: Float,
+    job: Job
   }
   type Loc {
     type: String
@@ -47,6 +47,11 @@ const typeDefs = `
   type LocationRef {
     address: String
     data: Location
+  }
+  input UserInput {
+    firstName: String!
+    lastName: String
+    email: String!
   }
   input LocationInput {
     coordinates: [Float!]!

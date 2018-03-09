@@ -20,8 +20,8 @@ class AddData extends Component {
     render() {
         const { activeCategory } = this.state
         return (
-            <div className="root">
-                <div className="controls">
+            <div>
+                <div>
                     <button name="user" onClick={this.changeActiveCategory}>Add User</button>
                     <button name="job" onClick={this.changeActiveCategory}>Add Job</button>
                 </div>
@@ -38,18 +38,6 @@ class AddData extends Component {
                         <JobList />
                     </Fragment>
                 )}
-                <style jsx>{`
-                    .root {
-                        display: flex;
-                        flex-direction: column
-                    }
-                    .controls {
-                        display: flex;
-                    }
-                    button {
-                        margin: 5px
-                    }
-                `}</style>
             </div>
         )
     }

@@ -1,29 +1,43 @@
-import Link from 'next/link'
-import { withRouter } from 'next/router'
+import { withStyles } from 'material-ui/styles';
 
+import { drawerWidth } from "../styles"
 
-const Header = ({ router: { pathname } }) => (
+import AppBar from 'material-ui/AppBar';
+import Toolbar from 'material-ui/Toolbar';
+import Typography from 'material-ui/Typography';
+import Button from 'material-ui/Button';
+import IconButton from 'material-ui/IconButton';
+import MenuIcon from 'material-ui-icons/Menu';
+
+const styles = theme => ({
+  flex: {
+    flex: 1,
+  },
+  appBar: {
+    width: `calc(100% - ${drawerWidth}px)`,
+    marginLeft: drawerWidth,
+  },
+  menuButton: {
+    marginLeft: -12,
+    marginRight: 20,
+  },
+});
+
+const Header = ({ classes }) => (
   <header>
-    <Link prefetch href='/'>
-      <a className={pathname === '/' ? 'is-active' : ''}>Home</a>
-    </Link>
-    <Link prefetch href='/about'>
-      <a className={pathname === '/about' ? 'is-active' : ''}>About</a>
-    </Link>
-    <style jsx>{`
-        header {
-          margin-bottom: 25px;
-        }
-        a {
-          font-size: 14px;
-          margin-right: 15px;
-          text-decoration: none;
-        }
-        .is-active {
-          text-decoration: underline;
-        }
-      `}</style>
+    <AppBar position="absolute" className={classes.appBar} >
+      <Toolbar>
+        <IconButton className={classes.menuButton} color="inherit" aria-label="Menu">
+          <MenuIcon />
+        </IconButton>
+        <Typography variant="title" color="inherit" className={classes.flex}>
+          Job Agency CMS
+        </Typography>
+        <Button color="inherit">Login</Button>
+      </Toolbar>
+    </AppBar>
+
   </header>
 )
 
-export default withRouter(Header)
+export default withStyles(styles)(Header)

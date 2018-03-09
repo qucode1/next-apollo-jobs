@@ -64,6 +64,52 @@ const resolvers = {
                 return jobArray
             }
             return getResult()
+        }, nearbyUsers(_, { lng, lat, distance, order }, ctx) {
+            const aggregate = Location.aggregate([
+                {
+                    $geoNear: {
+                        near: {
+                            type: "Point",
+                            coordinates: [lng, lat]
+                        },
+                        spherical: true,
+                        distanceField: "dist.calculated",
+                        distanceMultiplier: 0.001,
+                        maxDistance: distance * 1000 || 10000,
+                    }
+                },
+                {
+                    $match: {
+                        category: "user"
+                    },
+                },
+                {
+                    $group: { _id: "$user", distance: { $first: "$dist.calculated" } }
+                },
+                {
+                    $sort: {
+                        "distance": (order && (order === 1 || order === -1) && order) || 1
+                    }
+                },
+                {
+                    $lookup: {
+                        from: "users",
+                        localField: "_id",
+                        foreignField: "_id",
+                        as: "user"
+                    }
+                }
+            ])
+            const getResult = async () => {
+                const result = await aggregate.exec()
+                const userArray = result.map(user => ({
+                    distance: user.distance,
+                    user: user.user[0]
+                }))
+                // console.log(result)
+                return userArray
+            }
+            return getResult()
         }
     },
     User: {

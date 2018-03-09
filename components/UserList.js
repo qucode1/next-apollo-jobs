@@ -3,7 +3,7 @@ import React from 'react';
 import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
 
-const User = ({ user }) => (
+export const User = ({ user }) => (
     <div className="card">
         <style jsx>{`
       .card {
@@ -46,6 +46,9 @@ export const allUsers = gql`
       firstName
       lastName
       email
+      location {
+          address
+      }
     }
   }
 `;
