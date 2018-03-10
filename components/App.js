@@ -20,6 +20,7 @@ const styles = theme => ({
     overflow: 'hidden',
     position: 'relative',
   },
+  toolbar: theme.mixins.toolbar,
   content: {
     flexGrow: 1,
     backgroundColor: theme.palette.background.default,
@@ -34,6 +35,7 @@ const App = ({ children, classes }) => (
       <Navigation />
     </Hidden>
     <main className={classes.content}>
+      <div className={classes.toolbar} />
       {children}
     </main>
   </div>

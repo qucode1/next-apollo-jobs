@@ -1,4 +1,5 @@
-import { withRouter } from 'next/router'
+import { Component, Fragment } from "react"
+import Router, { withRouter } from 'next/router'
 import { withStyles } from "material-ui/styles"
 import { drawerWidth } from "../styles"
 import Link from 'next/link'
@@ -12,6 +13,7 @@ import SearchIcon from "material-ui-icons/Search"
 import InfoIcon from "material-ui-icons/Info"
 import MoreIcon from "material-ui-icons/More"
 
+
 const styles = theme => ({
     drawerPaper: {
         position: 'relative',
@@ -20,79 +22,111 @@ const styles = theme => ({
     toolbar: theme.mixins.toolbar,
 })
 
-const Navigation = ({ classes, router: { pathname } }) => {
-    return (
-        <Drawer
-            variant="permanent"
-            classes={{
-                paper: classes.drawerPaper,
-            }}
-            anchor="left"
-        >
-            <div className={classes.toolbar} />
-            <Divider />
-            <List>
-                <ListItem button>
-                    <ListItemIcon>
-                        <HomeIcon />
-                    </ListItemIcon>
-                    <ListItemText
-                        primary={
-                            <Link prefetch href='/' >
-                                <a>Home</a>
-                            </Link>
-                        }
-                    />
-                </ListItem>
-                <ListItem button>
-                    <ListItemIcon>
-                        <SearchIcon />
-                    </ListItemIcon>
-                    <ListItemText
-                        primary={
-                            <Link prefetch href='/search' >
-                                <a>Search</a>
-                            </Link>
-                        }
-                    />
-                </ListItem>
-                <ListItem button>
-                    <ListItemIcon>
-                        <InfoIcon />
-                    </ListItemIcon>
-                    <ListItemText
-                        primary={
-                            <Link prefetch href='/about' >
-                                <a>About</a>
-                            </Link>
-                        }
-                    />
-                </ListItem>
-                <ListItem button>
-                    <ListItemIcon>
-                        <MoreIcon />
-                    </ListItemIcon>
-                    <ListItemText
-                        primary={
-                            <Link prefetch href='/materialui' >
-                                <a>MaterialUi Example</a>
-                            </Link>
-                        }
-                    />
-                </ListItem>
-            </List>
-        </Drawer>
+class CustomLink extends Component {
+    constructor(props) {
+        super(props)
+    }
+    componentDidMount() {
+        Router.prefetch(`/${this.props.route}`)
+    }
+    render() {
+        return (
+            <Fragment>
+                {this.props.name || this.props.route}
+            </Fragment>
+        )
+    }
+}
 
-        //   <Link prefetch href='/about'>
-        //     <a className={pathname === '/about' ? 'is-active' : ''}>About</a>
-        //   </Link>
-        //   <Link prefetch href='/search'>
-        //     <a className={pathname === '/search' ? "is-active" : ""}>Search</a>
-        //   </Link>
-        //   <Link prefetch href='/materialui'>
-        //     <a className={pathname === '/materialui' ? "is-active" : ""}>Material Example</a>
-        //   </Link>
-    )
+class Navigation extends Component {
+    constructor(props) {
+        super(props)
+        this.handleRoutes = this.handleRoutes.bind(this)
+    }
+    handleRoutes = (route) => {
+        this.props.router.push(`${route}`)
+    }
+    render() {
+        const { classes, router: { pathname } } = this.props
+        return (
+            <Drawer
+                variant="permanent"
+                classes={{
+                    paper: classes.drawerPaper,
+                }}
+                anchor="left"
+            >
+                <div className={classes.toolbar} />
+                <Divider />
+                <List>
+                    <ListItem
+                        button
+                        onClick={e => this.handleRoutes("/")}
+                    >
+                        <ListItemIcon>
+                            <HomeIcon />
+                        </ListItemIcon>
+                        <ListItemText
+                            primary={
+                                <CustomLink route="/" name="home" />
+                            }
+                        />
+                    </ListItem>
+                    <ListItem
+                        button
+                        onClick={e => this.handleRoutes("/search")}
+                    >
+                        <ListItemIcon>
+                            <SearchIcon />
+                        </ListItemIcon>
+                        <ListItemText
+                            primary={
+                                <CustomLink route="search" />
+                            }
+                        />
+
+                    </ListItem>
+                    <ListItem
+                        button
+                        onClick={e => this.handleRoutes("/about")}
+                    >
+                        <ListItemIcon>
+                            <InfoIcon />
+                        </ListItemIcon>
+                        <ListItemText
+                            primary={
+                                <CustomLink route="about" />
+                            }
+                        />
+
+                    </ListItem>
+                    <ListItem
+                        button
+                        onClick={e => this.handleRoutes("/materialui")}
+                    >
+                        <ListItemIcon>
+                            <MoreIcon />
+                        </ListItemIcon>
+                        <ListItemText
+                            primary={
+                                <CustomLink route="materialui" />
+                            }
+                        />
+                    </ListItem>
+                </List>
+            </Drawer>
+
+            //   <Link prefetch href='/about'>
+            //     <a className={pathname === '/about' ? 'is-active' : ''}>About</a>
+            //   </Link>
+            //   <Link prefetch href='/search'>
+            //     <a className={pathname === '/search' ? "is-active" : ""}>Search</a>
+            //   </Link>
+            //   <Link prefetch href='/materialui'>
+            //     <a className={pathname === '/materialui' ? "is-active" : ""}>Material Example</a>
+            //   </Link>
+        )
+    }
 }
 
 export default withStyles(styles)(withRouter(Navigation))
