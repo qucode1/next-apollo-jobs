@@ -15,6 +15,15 @@ import MoreIcon from "material-ui-icons/More"
 
 
 const styles = theme => ({
+    activeBgColor: {
+        backgroundColor: theme.palette.action.active,
+        "&:hover": {
+            backgroundColor: theme.palette.action.active,
+        }
+    },
+    activeTextColor: {
+        color: theme.palette.getContrastText(theme.palette.action.active),
+    },
     drawerPaper: {
         position: 'relative',
         width: drawerWidth,
@@ -22,29 +31,10 @@ const styles = theme => ({
     toolbar: theme.mixins.toolbar,
 })
 
-class CustomLink extends Component {
-    constructor(props) {
-        super(props)
-    }
-    componentDidMount() {
-        Router.prefetch(`/${this.props.route}`)
-    }
-    render() {
-        return (
-            <Fragment>
-                {this.props.name || this.props.route}
-            </Fragment>
-        )
-    }
-}
 
 class Navigation extends Component {
     constructor(props) {
         super(props)
-        this.handleRoutes = this.handleRoutes.bind(this)
-    }
-    handleRoutes = (route) => {
-        this.props.router.push(`${route}`)
     }
     render() {
         const { classes, router: { pathname } } = this.props
@@ -58,73 +48,92 @@ class Navigation extends Component {
             >
                 <div className={classes.toolbar} />
                 <Divider />
-                <List>
-                    <ListItem
-                        button
-                        onClick={e => this.handleRoutes("/")}
-                    >
-                        <ListItemIcon>
-                            <HomeIcon />
-                        </ListItemIcon>
-                        <ListItemText
-                            primary={
-                                <CustomLink route="/" name="home" />
-                            }
-                        />
-                    </ListItem>
-                    <ListItem
-                        button
-                        onClick={e => this.handleRoutes("/search")}
-                    >
-                        <ListItemIcon>
-                            <SearchIcon />
-                        </ListItemIcon>
-                        <ListItemText
-                            primary={
-                                <CustomLink route="search" />
-                            }
-                        />
 
-                    </ListItem>
-                    <ListItem
-                        button
-                        onClick={e => this.handleRoutes("/about")}
-                    >
-                        <ListItemIcon>
-                            <InfoIcon />
-                        </ListItemIcon>
-                        <ListItemText
-                            primary={
-                                <CustomLink route="about" />
-                            }
-                        />
+                <List
+                    component="nav"
+                >
+                    <Link prefetch href='/'>
+                        <ListItem
+                            classes={pathname === "/" && { root: classes.activeBgColor }}
+                            button
+                        >
+                            <ListItemIcon
+                                classes={pathname === "/" && { root: classes.activeTextColor }}
+                            >
+                                <HomeIcon />
+                            </ListItemIcon>
+                            <ListItemText
+                                classes={pathname === "/" && { primary: classes.activeTextColor }}
+                                primary={
+                                    <a>Home</a>
+                                }
+                            />
+                        </ListItem>
+                    </Link>
 
-                    </ListItem>
-                    <ListItem
-                        button
-                        onClick={e => this.handleRoutes("/materialui")}
-                    >
-                        <ListItemIcon>
-                            <MoreIcon />
-                        </ListItemIcon>
-                        <ListItemText
-                            primary={
-                                <CustomLink route="materialui" />
-                            }
-                        />
-                    </ListItem>
+                    <Link prefetch href='/search'>
+                        <ListItem
+                            button
+                            classes={pathname === "/search" && { root: classes.activeBgColor }}
+                        >
+                            <ListItemIcon
+                                classes={pathname === "/search" && { root: classes.activeTextColor }}
+                            >
+                                <SearchIcon />
+                            </ListItemIcon>
+                            <ListItemText
+                                classes={pathname === "/search" && { primary: classes.activeTextColor }}
+                                primary={
+                                    <a>Search</a>
+                                }
+                            />
+
+                        </ListItem>
+                    </Link>
+
+                    <Link prefetch href='/about'>
+                        <ListItem
+                            button
+                            classes={pathname === "/about" && { root: classes.activeBgColor }}
+                        >
+                            <Fragment>
+                                <ListItemIcon
+                                    classes={pathname === "/about" && { root: classes.activeTextColor }}
+                                >
+                                    <InfoIcon />
+                                </ListItemIcon>
+                                <ListItemText
+                                    classes={pathname === "/about" && { primary: classes.activeTextColor }}
+                                    primary={
+                                        <a>About</a>
+                                    }
+                                />
+                            </Fragment>
+                        </ListItem>
+                    </Link>
+
+                    <Link prefetch href='/materialui'>
+                        <ListItem
+                            button
+                            classes={pathname === "/materialui" && { root: classes.activeBgColor }}
+                        >
+                            <Fragment>
+                                <ListItemIcon
+                                    classes={pathname === "/materialui" && { root: classes.activeTextColor }}
+                                >
+                                    <MoreIcon />
+                                </ListItemIcon>
+                                <ListItemText
+                                    classes={pathname === "/materialui" && { primary: classes.activeTextColor }}
+                                    primary={
+                                        <a>MaterialUi</a>
+                                    }
+                                />
+                            </Fragment>
+                        </ListItem>
+                    </Link>
                 </List>
             </Drawer>
-
-            //   <Link prefetch href='/about'>
-            //     <a className={pathname === '/about' ? 'is-active' : ''}>About</a>
-            //   </Link>
-            //   <Link prefetch href='/search'>
-            //     <a className={pathname === '/search' ? "is-active" : ""}>Search</a>
-            //   </Link>
-            //   <Link prefetch href='/materialui'>
-            //     <a className={pathname === '/materialui' ? "is-active" : ""}>Material Example</a>
-            //   </Link>
         )
     }
 }
