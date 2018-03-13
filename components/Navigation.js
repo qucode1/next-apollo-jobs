@@ -1,5 +1,5 @@
 import { Component, Fragment } from "react"
-import Router, { withRouter } from 'next/router'
+import { withRouter } from 'next/router'
 import { withStyles } from "material-ui/styles"
 import { drawerWidth } from "../styles"
 import Link from 'next/link'
@@ -47,16 +47,16 @@ class Navigation extends Component {
             >
                 <Link prefetch href='/'>
                     <ListItem
-                        classes={pathname === "/" && { root: classes.activeBgColor }}
+                        classes={pathname === "/" ? { root: classes.activeBgColor } : {}}
                         button
                     >
                         <ListItemIcon
-                            classes={pathname === "/" && { root: classes.activeTextColor }}
+                            classes={pathname === "/" ? { root: classes.activeTextColor } : {}}
                         >
                             <HomeIcon />
                         </ListItemIcon>
                         <ListItemText
-                            classes={pathname === "/" && { primary: classes.activeTextColor }}
+                            classes={pathname === "/" ? { primary: classes.activeTextColor } : {}}
                             primary={
                                 <a>Home</a>
                             }
@@ -67,15 +67,15 @@ class Navigation extends Component {
                 <Link prefetch href='/search'>
                     <ListItem
                         button
-                        classes={pathname === "/search" && { root: classes.activeBgColor }}
+                        classes={pathname === "/search" ? { root: classes.activeBgColor } : {}}
                     >
                         <ListItemIcon
-                            classes={pathname === "/search" && { root: classes.activeTextColor }}
+                            classes={pathname === "/search" ? { root: classes.activeTextColor } : {}}
                         >
                             <SearchIcon />
                         </ListItemIcon>
                         <ListItemText
-                            classes={pathname === "/search" && { primary: classes.activeTextColor }}
+                            classes={pathname === "/search" ? { primary: classes.activeTextColor } : {}}
                             primary={
                                 <a>Search</a>
                             }
@@ -87,16 +87,16 @@ class Navigation extends Component {
                 <Link prefetch href='/about'>
                     <ListItem
                         button
-                        classes={pathname === "/about" && { root: classes.activeBgColor }}
+                        classes={pathname === "/about" ? { root: classes.activeBgColor } : {}}
                     >
                         <Fragment>
                             <ListItemIcon
-                                classes={pathname === "/about" && { root: classes.activeTextColor }}
+                                classes={pathname === "/about" ? { root: classes.activeTextColor } : {}}
                             >
                                 <InfoIcon />
                             </ListItemIcon>
                             <ListItemText
-                                classes={pathname === "/about" && { primary: classes.activeTextColor }}
+                                classes={pathname === "/about" ? { primary: classes.activeTextColor } : {}}
                                 primary={
                                     <a>About</a>
                                 }
@@ -108,16 +108,16 @@ class Navigation extends Component {
                 <Link prefetch href='/materialui'>
                     <ListItem
                         button
-                        classes={pathname === "/materialui" && { root: classes.activeBgColor }}
+                        classes={pathname === "/materialui" ? { root: classes.activeBgColor } : {}}
                     >
                         <Fragment>
                             <ListItemIcon
-                                classes={pathname === "/materialui" && { root: classes.activeTextColor }}
+                                classes={pathname === "/materialui" ? { root: classes.activeTextColor } : {}}
                             >
                                 <MoreIcon />
                             </ListItemIcon>
                             <ListItemText
-                                classes={pathname === "/materialui" && { primary: classes.activeTextColor }}
+                                classes={pathname === "/materialui" ? { primary: classes.activeTextColor } : {}}
                                 primary={
                                     <a>MaterialUi</a>
                                 }

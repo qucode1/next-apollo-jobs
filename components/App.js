@@ -6,6 +6,9 @@ import Hidden from 'material-ui/Hidden';
 
 import Header from "./Header"
 import Navigation from "./Navigation"
+import Auth from "./Auth"
+
+const auth = new Auth()
 
 const styles = theme => ({
   "@global": {
@@ -42,10 +45,11 @@ class App extends Component {
     }))
   }
   render() {
+
     const { children, classes } = this.props
     return (
       <div className={classes.appFrame} >
-        <Header handleDrawerToggle={this.handleDrawerToggle} />
+        <Header handleDrawerToggle={this.handleDrawerToggle} auth={auth} />
         <Navigation open={this.state.open} handleDrawerToggle={this.handleDrawerToggle} />
         <main className={classes.content}>
           <div className={classes.toolbar} />

@@ -1,3 +1,4 @@
+import { Component } from "react"
 import { withStyles } from 'material-ui/styles';
 
 import { drawerWidth } from "../styles"
@@ -9,6 +10,7 @@ import Typography from 'material-ui/Typography';
 import Button from 'material-ui/Button';
 import IconButton from 'material-ui/IconButton';
 import MenuIcon from 'material-ui-icons/Menu';
+
 
 const styles = theme => ({
   flex: {
@@ -29,23 +31,43 @@ const styles = theme => ({
   },
 });
 
-const Header = ({ classes, handleDrawerToggle }) => (
-  <header>
-    <AppBar position="absolute" className={classes.appBar} >
-      <Toolbar>
-        <Hidden mdUp >
-          <IconButton className={classes.menuButton} color="inherit" aria-label="toggle navigation" onClick={handleDrawerToggle}>
-            <MenuIcon />
-          </IconButton>
-        </Hidden>
-        <Typography variant="title" color="inherit" className={classes.flex}>
-          Job Agency CMS
+class Header extends Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      renderAuthBtn: false
+    }
+  }
+  componentDidMount() {
+    this.setState({
+      renderAuthBtn: true
+    })
+  }
+  render() {
+    const { classes, handleDrawerToggle, auth: { login, logout, isAuthenticated } } = this.props
+    return (
+      <header>
+        <AppBar position="absolute" className={classes.appBar} >
+          <Toolbar>
+            <Hidden mdUp >
+              <IconButton className={classes.menuButton} color="inherit" aria-label="toggle navigation" onClick={handleDrawerToggle}>
+                <MenuIcon />
+              </IconButton>
+            </Hidden>
+            <Typography variant="title" color="inherit" className={classes.flex}>
+              Job Agency CMS
         </Typography>
-        <Button color="inherit">Login</Button>
-      </Toolbar>
-    </AppBar>
-
-  </header>
-)
+            {this.state.renderAuthBtn
+              ? !isAuthenticated()
+                ? <Button onClick={login} color="inherit">Login</Button>
+                : <Button onClick={logout} color="inherit">Logout</Button>
+              : null
+            }
+          </Toolbar>
+        </AppBar>
+      </header>
+    )
+  }
+}
 
 export default withStyles(styles)(Header)
