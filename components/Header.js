@@ -2,6 +2,7 @@ import { withStyles } from 'material-ui/styles';
 
 import { drawerWidth } from "../styles"
 
+import Hidden from 'material-ui/Hidden';
 import AppBar from 'material-ui/AppBar';
 import Toolbar from 'material-ui/Toolbar';
 import Typography from 'material-ui/Typography';
@@ -14,8 +15,13 @@ const styles = theme => ({
     flex: 1,
   },
   appBar: {
-    width: `calc(100% - ${drawerWidth}px)`,
-    marginLeft: drawerWidth,
+    [theme.breakpoints.down('sm')]: {
+      zIndex: theme.zIndex.drawer + 1
+    },
+    [theme.breakpoints.up('md')]: {
+      width: `calc(100% - ${drawerWidth}px)`,
+      marginLeft: drawerWidth,
+    }
   },
   menuButton: {
     marginLeft: -12,
@@ -23,13 +29,15 @@ const styles = theme => ({
   },
 });
 
-const Header = ({ classes }) => (
+const Header = ({ classes, handleDrawerToggle }) => (
   <header>
     <AppBar position="absolute" className={classes.appBar} >
       <Toolbar>
-        <IconButton className={classes.menuButton} color="inherit" aria-label="Menu">
-          <MenuIcon />
-        </IconButton>
+        <Hidden mdUp >
+          <IconButton className={classes.menuButton} color="inherit" aria-label="toggle navigation" onClick={handleDrawerToggle}>
+            <MenuIcon />
+          </IconButton>
+        </Hidden>
         <Typography variant="title" color="inherit" className={classes.flex}>
           Job Agency CMS
         </Typography>

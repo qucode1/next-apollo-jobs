@@ -1,6 +1,6 @@
-import { withStyles } from "material-ui/styles"
+import { Component, Fragment } from 'react'
 import withRoot from "../lib/withRoot"
-import { Fragment } from 'react'
+import { withStyles } from "material-ui/styles"
 
 import Hidden from 'material-ui/Hidden';
 
@@ -28,17 +28,31 @@ const styles = theme => ({
   }
 })
 
-const App = ({ children, classes }) => (
-  <div className={classes.appFrame} >
-    <Header />
-    <Hidden smDown>
-      <Navigation />
-    </Hidden>
-    <main className={classes.content}>
-      <div className={classes.toolbar} />
-      {children}
-    </main>
-  </div>
-)
-
+class App extends Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      open: false
+    }
+    this.handleDrawerToggle = this.handleDrawerToggle.bind(this)
+  }
+  handleDrawerToggle = () => {
+    this.setState(state => ({
+      open: !state.open
+    }))
+  }
+  render() {
+    const { children, classes } = this.props
+    return (
+      <div className={classes.appFrame} >
+        <Header handleDrawerToggle={this.handleDrawerToggle} />
+        <Navigation open={this.state.open} handleDrawerToggle={this.handleDrawerToggle} />
+        <main className={classes.content}>
+          <div className={classes.toolbar} />
+          {children}
+        </main>
+      </div>
+    )
+  }
+}
 export default withRoot(withStyles(styles)(App))
