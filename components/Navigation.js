@@ -13,6 +13,7 @@ import HomeIcon from 'material-ui-icons/Home';
 import SearchIcon from "material-ui-icons/Search"
 import InfoIcon from "material-ui-icons/Info"
 import MoreIcon from "material-ui-icons/More"
+import AddIcon from "material-ui-icons/NoteAdd"
 
 
 const styles = theme => ({
@@ -78,6 +79,26 @@ class Navigation extends Component {
                             classes={pathname === "/search" ? { primary: classes.activeTextColor } : {}}
                             primary={
                                 <a>Search</a>
+                            }
+                        />
+
+                    </ListItem>
+                </Link>
+
+                <Link prefetch href='/add'>
+                    <ListItem
+                        button
+                        classes={pathname === "/add" ? { root: classes.activeBgColor } : {}}
+                    >
+                        <ListItemIcon
+                            classes={pathname === "/add" ? { root: classes.activeTextColor } : {}}
+                        >
+                            <AddIcon />
+                        </ListItemIcon>
+                        <ListItemText
+                            classes={pathname === "/add" ? { primary: classes.activeTextColor } : {}}
+                            primary={
+                                <a>Add</a>
                             }
                         />
 

@@ -3,12 +3,25 @@ import Router from 'next/router'
 import auth0 from 'auth0-js';
 
 class Auth {
+    auth0 = new auth0.WebAuth({
+        domain: 'next-graphql.eu.auth0.com',
+        clientID: 'ss4Nuzm3NHJ3nFNg2z0qNeeI2TuWeN4q',
+        redirectUri: 'http://localhost:3000/callback',
+        audience: 'https://next-graphql.eu.auth0.com/api/v2/',
+        responseType: 'token id_token',
+        scope: 'openid profile'
+    });
+
     constructor() {
         this.login = this.login.bind(this);
         this.logout = this.logout.bind(this);
         this.handleAuthentication = this.handleAuthentication.bind(this);
         this.isAuthenticated = this.isAuthenticated.bind(this);
+        this.getAccessToken = this.getAccessToken.bind(this);
+        this.getProfile = this.getProfile.bind(this);
     }
+
+    userProfile
 
     handleAuthentication() {
         this.auth0.parseHash((err, authResult) => {
@@ -32,11 +45,30 @@ class Auth {
         Router.replace('/');
     }
 
+    getAccessToken() {
+        const accessToken = localStorage.getItem('access_token');
+        if (!accessToken) {
+            throw new Error('No access token found');
+        }
+        return accessToken;
+    }
+
+    getProfile(cb) {
+        let accessToken = this.getAccessToken();
+        this.auth0.client.userInfo(accessToken, (err, profile) => {
+            if (profile) {
+                this.userProfile = profile;
+            }
+            cb(err, profile);
+        });
+    }
+
     logout() {
         // Clear Access Token and ID Token from local storage
         localStorage.removeItem('access_token');
         localStorage.removeItem('id_token');
         localStorage.removeItem('expires_at');
+        this.userProfile = null
         // navigate to the home route
         Router.replace('/');
     }
@@ -47,14 +79,6 @@ class Auth {
         let expiresAt = JSON.parse(localStorage.getItem('expires_at'));
         return new Date().getTime() < expiresAt;
     }
-    auth0 = new auth0.WebAuth({
-        domain: 'next-graphql.eu.auth0.com',
-        clientID: 'ss4Nuzm3NHJ3nFNg2z0qNeeI2TuWeN4q',
-        redirectUri: 'http://localhost:3000/callback',
-        audience: 'https://next-graphql.eu.auth0.com/userinfo',
-        responseType: 'token id_token',
-        scope: 'openid'
-    });
 
     login() {
         this.auth0.authorize();

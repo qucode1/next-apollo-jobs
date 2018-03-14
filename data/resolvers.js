@@ -1,12 +1,42 @@
 const mongoose = require('mongoose');
 const { User, Job, Location } = require('./mongodb');
+var jwt = require('jsonwebtoken');
+const jwksRsa = require('jwks-rsa');
+const { promisify } = require("util")
+
+const isAuthenticated = async (accessToken) => {
+    try {
+        const { header: { kid } } = await jwt.decode(accessToken, { complete: true })
+        const client = jwksRsa({
+            cache: true,
+            rateLimit: true,
+            jwksRequestsPerMinute: 10,
+            jwksUri: `https://next-graphql.eu.auth0.com/.well-known/jwks.json`
+        })
+        const getSigningKey = promisify(client.getSigningKey)
+        const { publicKey, rsaPublicKey } = await getSigningKey(kid)
+
+        const decoded = jwt.verify(accessToken, (publicKey || rsaPublicKey), {
+            audience: 'https://next-graphql.eu.auth0.com/api/v2/',
+            issuer: `https://next-graphql.eu.auth0.com/`,
+            algorithms: ['RS256']
+        })
+        return decoded
+    } catch (err) {
+        console.error(err)
+        return false
+    }
+}
 
 const resolvers = {
     Query: {
-        user(_, args) {
-            return User.findOne(args);
+        async user(_, { accessToken, ...args }) {
+            const auth = await isAuthenticated(accessToken)
+            console.log(auth, "user query resolver");
+            return auth ? User.findOne(args) : {}
         },
-        allUsers() {
+        allUsers(_, args, ctx) {
+            console.log(ctx);
             return User.find();
         },
         job(_, args) {

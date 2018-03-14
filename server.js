@@ -18,7 +18,12 @@ const handle = app.getRequestHandler();
 app.prepare().then(() => {
     const server = express();
 
-    server.use('/graphql', bodyParser.json(), graphqlExpress({ schema }));
+    server.use('/graphql', bodyParser.json(), graphqlExpress(req => ({
+        schema,
+        context: {
+            accessToken: req.headers.accesstoken
+        }
+    })));
     server.use('/graphiql', graphiqlExpress({ endpointURL: '/graphql' }));
 
     server.get('*', (req, res) => handle(req, res));
