@@ -3,6 +3,7 @@ const resolvers = require('./resolvers');
 
 const typeDefs = `
   type Query {
+    me: User
     user(id: String, firstName: String, lastName: String, email: String, accessToken: String, oAuth: String): User
     allUsers: [User]
     job(id: String): Job
@@ -18,6 +19,7 @@ const typeDefs = `
     email: String
     oAuth: String
     location: LocationRef
+    profileToken: String
   }
   type nearbyUser {
     distance: Float,

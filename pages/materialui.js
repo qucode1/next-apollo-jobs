@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import { withStyles } from 'material-ui/styles';
-import withRoot from '../lib/withRoot';
+import withData from "../lib/withData"
 
 import Button from 'material-ui/Button';
 import Dialog, {
@@ -76,4 +76,4 @@ Index.propTypes = {
     classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(Index);
+export default withData(withStyles(styles)(Index));

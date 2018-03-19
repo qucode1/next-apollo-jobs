@@ -1,6 +1,7 @@
+import withData from "../lib/withData"
 import App from '../components/App'
 
-export default () => (
+export default withData(() => (
   <App>
     <article>
       <h1>The Idea Behind This Example</h1>
@@ -36,4 +37,4 @@ export default () => (
       </p>
     </article>
   </App>
-)
+))

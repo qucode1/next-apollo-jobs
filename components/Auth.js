@@ -27,7 +27,7 @@ class Auth {
         this.auth0.parseHash((err, authResult) => {
             if (authResult && authResult.accessToken && authResult.idToken) {
                 this.setSession(authResult);
-                Router.replace('/');
+                // Router.replace('/');
             } else if (err) {
                 Router.replace('/');
                 console.log(err);
@@ -66,6 +66,7 @@ class Auth {
     logout() {
         // Clear Access Token and ID Token from local storage
         localStorage.removeItem('access_token');
+        localStorage.removeItem('profile_token')
         localStorage.removeItem('id_token');
         localStorage.removeItem('expires_at');
         this.userProfile = null

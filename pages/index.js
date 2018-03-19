@@ -4,7 +4,7 @@ import App from '../components/App'
 import withData from '../lib/withData'
 
 import Auth from "../components/Auth"
-import User from '../components/User'
+import Me from '../components/Me'
 
 const auth = new Auth()
 
@@ -25,7 +25,7 @@ class Index extends Component {
       <App>
         {this.state.inBrowser
           ? auth.isAuthenticated()
-            ? <User />
+            ? <Me />
             : <h3>You are not authenticated!</h3>
           : <h3>Loading...</h3>
         }

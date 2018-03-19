@@ -1,5 +1,6 @@
 import { Component } from "react"
 import { withStyles } from 'material-ui/styles';
+import { withApollo } from "react-apollo"
 
 import { drawerWidth } from "../styles"
 
@@ -37,14 +38,24 @@ class Header extends Component {
     this.state = {
       renderAuthBtn: false
     }
+    this.login = this.login.bind(this)
+    this.logout = this.logout.bind(this)
   }
   componentDidMount() {
     this.setState({
       renderAuthBtn: true
     })
   }
+  login() {
+    this.props.auth.login()
+    this.props.client.resetStore()
+  }
+  logout() {
+    this.props.auth.logout()
+    this.props.client.resetStore()
+  }
   render() {
-    const { classes, handleDrawerToggle, auth: { login, logout, isAuthenticated } } = this.props
+    const { classes, handleDrawerToggle, auth: { isAuthenticated } } = this.props
     return (
       <header>
         <AppBar position="absolute" className={classes.appBar} >
@@ -59,8 +70,8 @@ class Header extends Component {
         </Typography>
             {this.state.renderAuthBtn
               ? !isAuthenticated()
-                ? <Button onClick={login} color="inherit">Login</Button>
-                : <Button onClick={logout} color="inherit">Logout</Button>
+                ? <Button onClick={this.login} color="inherit">Login</Button>
+                : <Button onClick={this.logout} color="inherit">Logout</Button>
               : null
             }
           </Toolbar>
@@ -70,4 +81,4 @@ class Header extends Component {
   }
 }
 
-export default withStyles(styles)(Header)
+export default withApollo(withStyles(styles)(Header))

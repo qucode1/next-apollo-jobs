@@ -1,13 +1,15 @@
 import { Component } from "react"
 import Router from "next/router"
 
+import withData from "../lib/withData"
+
 import App from "../components/App"
 
 import Auth from "../components/Auth"
 
 const auth = new Auth()
 
-export default class CallBack extends Component {
+export default withData(class CallBack extends Component {
     constructor(props) {
         super(props)
     }
@@ -23,4 +25,4 @@ export default class CallBack extends Component {
             </App>
         )
     }
-}
+})

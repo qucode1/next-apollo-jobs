@@ -28,16 +28,35 @@ const isAuthenticated = async (accessToken) => {
     }
 }
 
+isAdmin = async (sub, profileToken) => {
+    try {
+        const { user: { oAuth, role } } = await jwt.verify(profileToken, process.env.JWT_SECRET)
+        return oAuth === sub && role === "admin"
+    } catch (err) {
+        console.log(error)
+        return false
+    }
+}
+
 const resolvers = {
     Query: {
+        async me(_, args, { accessToken }) {
+            const auth = await isAuthenticated(accessToken)
+            console.log(auth, "me query resolver");
+            return auth ? User.findOne({ oAuth: auth.sub }) : {}
+        },
         async user(_, { accessToken, ...args }) {
             const auth = await isAuthenticated(accessToken)
             console.log(auth, "user query resolver");
             return auth ? User.findOne(args) : {}
         },
-        allUsers(_, args, ctx) {
-            console.log(ctx);
-            return User.find();
+        async allUsers(_, args, { accessToken, profileToken }) {
+            const auth = await isAuthenticated(accessToken)
+            const admin = await isAdmin(auth.sub, profileToken)
+            // console.log(auth, "allUsers auth")
+            // console.log(admin, "allUsers admin");
+            console.log(admin && auth);
+            return (auth && admin) ? User.find() : []
         },
         job(_, args) {
             return Job.findOne(args);
@@ -145,6 +164,12 @@ const resolvers = {
     User: {
         id(user) {
             return user._id
+        },
+        profileToken(user) {
+            return jwt.sign({ user }, process.env.JWT_SECRET, {
+                expiresIn: '1H',
+                issuer: 'JobCMSGraphql'
+            })
         }
     },
     Job: {

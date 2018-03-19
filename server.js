@@ -21,7 +21,8 @@ app.prepare().then(() => {
     server.use('/graphql', bodyParser.json(), graphqlExpress(req => ({
         schema,
         context: {
-            accessToken: req.headers.accesstoken
+            accessToken: req.headers.access_token,
+            profileToken: req.headers.profile_token
         }
     })));
     server.use('/graphiql', graphiqlExpress({ endpointURL: '/graphql' }));
