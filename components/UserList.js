@@ -27,7 +27,8 @@ export const User = ({ user }) => (
 const UserList = ({ data }) => {
     const { error, allUsers } = data;
     if (error) {
-        return <div>Error loading users.</div>;
+        console.log(error);
+        return <div>{error.message}</div>;
     }
     if (allUsers && allUsers.length) {
         return (

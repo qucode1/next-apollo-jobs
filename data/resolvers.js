@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const { User, Job, Location } = require('./mongodb');
 var jwt = require('jsonwebtoken');
 const jwksRsa = require('jwks-rsa');
+const { GraphQLError } = require("graphql")
 const { promisify } = require("util")
 
 const isAuthenticated = async (accessToken) => {
@@ -51,12 +52,17 @@ const resolvers = {
             return auth ? User.findOne(args) : {}
         },
         async allUsers(_, args, { accessToken, profileToken }) {
-            const auth = await isAuthenticated(accessToken)
-            const admin = await isAdmin(auth.sub, profileToken)
-            // console.log(auth, "allUsers auth")
-            // console.log(admin, "allUsers admin");
-            console.log(admin && auth);
-            return (auth && admin) ? User.find() : []
+            if (accessToken && profileToken) {
+                const auth = await isAuthenticated(accessToken)
+                const admin = await isAdmin(auth.sub, profileToken)
+                // console.log(auth, "allUsers auth")
+                // console.log(admin, "allUsers admin");
+                // console.log(admin && auth);
+                return (auth && admin) ? User.find() : new Error("You are not authenticated")
+            } else {
+                // console.error("You are not authenticated")
+                return new Error("You are not authenticated")
+            }
         },
         job(_, args) {
             return Job.findOne(args);

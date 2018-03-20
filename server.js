@@ -23,6 +23,12 @@ app.prepare().then(() => {
         context: {
             accessToken: req.headers.access_token,
             profileToken: req.headers.profile_token
+        },
+        formatError: error => {
+            return {
+                name: error.name,
+                message: error.message
+            }
         }
     })));
     server.use('/graphiql', graphiqlExpress({ endpointURL: '/graphql' }));
