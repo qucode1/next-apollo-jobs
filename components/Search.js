@@ -73,7 +73,10 @@ class Search extends Component {
             )
     )
     render() {
-        const { allJobs: { allJobs, loading: jobsLoading }, allUsers: { allUsers, loading: usersLoading } } = this.props
+        const {
+            allJobs: { allJobs = [], loading: jobsLoading, error: jobsError },
+            allUsers: { allUsers = [], loading: usersLoading, error: usersError }
+        } = this.props
         const { target } = this.state
 
         return (
@@ -149,12 +152,15 @@ class Search extends Component {
                         )}
                 </Downshift>
                 {
-                    this.state.target === "user" &&
-                    <ul>
-                        {!usersLoading && allUsers.map(user => (
-                            <li key={user.id}>{user.firstName}</li>
-                        ))}
-                    </ul>
+                    this.state.target === "user" && (
+                        usersError
+                            ? <div>{usersError.message}</div>
+                            : <ul>
+                                {!usersLoading && allUsers.map(user => (
+                                    <li key={user.id}>{user.firstName}</li>
+                                ))}
+                            </ul>
+                    )
                 }
                 {
                     this.state.target === "job" &&

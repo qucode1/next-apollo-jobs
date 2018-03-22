@@ -5,6 +5,14 @@ const jwksRsa = require('jwks-rsa');
 const { GraphQLError } = require("graphql")
 const { promisify } = require("util")
 
+// const { privateProfileKey, publicProfileKey } = require("../keys.json")
+
+const privateProfileKey = process.env.PRIVATE_KEY
+const publicProfileKey = process.env.PUBLIC_KEY
+
+// console.log(process.env.PRIVATE_KEY, "privateProfileKey");
+// console.log(process.env.PUBLIC_KEY, "publicProfileKey");
+
 const isAuthenticated = async (accessToken) => {
     try {
         const { header: { kid } } = await jwt.decode(accessToken, { complete: true })
@@ -31,10 +39,10 @@ const isAuthenticated = async (accessToken) => {
 
 isAdmin = async (sub, profileToken) => {
     try {
-        const { user: { oAuth, role } } = await jwt.verify(profileToken, process.env.JWT_SECRET)
+        const { oAuth, role } = await jwt.verify(profileToken, publicProfileKey)
         return oAuth === sub && role === "admin"
     } catch (err) {
-        console.log(error)
+        console.error(err)
         return false
     }
 }
@@ -43,12 +51,12 @@ const resolvers = {
     Query: {
         async me(_, args, { accessToken }) {
             const auth = await isAuthenticated(accessToken)
-            console.log(auth, "me query resolver");
+            // console.log(auth, "me query resolver");
             return auth ? User.findOne({ oAuth: auth.sub }) : {}
         },
         async user(_, { accessToken, ...args }) {
             const auth = await isAuthenticated(accessToken)
-            console.log(auth, "user query resolver");
+            // console.log(auth, "user query resolver");
             return auth ? User.findOne(args) : {}
         },
         async allUsers(_, args, { accessToken, profileToken }) {
@@ -172,11 +180,22 @@ const resolvers = {
             return user._id
         },
         profileToken(user) {
-            return jwt.sign({ user }, process.env.JWT_SECRET, {
-                expiresIn: '1H',
-                issuer: 'JobCMSGraphql'
-            })
-        }
+            return jwt.sign(
+                {
+                    id: user._id,
+                    oAuth: user.oAuth,
+                    role: user.role
+                },
+                privateProfileKey,
+                {
+                    expiresIn: '6H',
+                    subject: user.oAuth,
+                    issuer: 'JobCMSGraphql',
+                    algorithm: "RS256"
+                }
+            )
+        },
+        publicKey() { return publicProfileKey }
     },
     Job: {
         id(job) {

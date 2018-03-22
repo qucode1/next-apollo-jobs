@@ -18,8 +18,10 @@ const typeDefs = `
     lastName: String
     email: String
     oAuth: String
+    role: String
     location: LocationRef
     profileToken: String
+    publicKey: String
   }
   type nearbyUser {
     distance: Float,
