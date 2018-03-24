@@ -4,12 +4,12 @@ import gql from "graphql-tag"
 const ME_QUERY = gql`
     query {
         me {
-        firstName
-        lastName
-        email
-        oAuth
-        profileToken
-    }
+            firstName
+            lastName
+            email
+            oAuth
+            profileToken
+        }
     }
 `
 
@@ -24,7 +24,7 @@ const User = ({ me: { me, loading, error } }) => {
                 <p>{me.oAuth}</p>
                 <p>{me.profileToken}</p>
             </div>
-            ) : <div>Something went wrong {error.message}</div>
+            ) : <div>{error.message}</div>
 
 
 }
